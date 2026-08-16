@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+uploads/
+
+*.log
+npm-debug.log*
+
+.vscode/
