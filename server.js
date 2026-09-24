@@ -7,6 +7,7 @@ const { Groq } = require("groq-sdk");
 const { PDFParse } = require("pdf-parse");
 
 const createResumePrompt = require("./prompts/resumePrompt");
+const path = require("path");
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -16,7 +17,13 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 
+
 app.use(cors());
+app.use(express.static(__dirname));
+
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 app.post("/api/analyze", upload.single("resume"), async function (req, res) {
   if (!req.file) {
@@ -69,5 +76,5 @@ app.post("/api/analyze", upload.single("resume"), async function (req, res) {
 });
 
 app.listen(process.env.PORT || 3000, function () {
-  console.log("Server running on port 3000");
+  console.log("Server running on port " + (process.env.PORT || 3000));
 });
