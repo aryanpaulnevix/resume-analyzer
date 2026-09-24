@@ -59,7 +59,6 @@ app.post("/api/analyze", upload.single("resume"), async function (req, res) {
     res.json({
       analysis: analysisData,
     });
-    
   } catch (error) {
     console.error("Resume analysis failed:", error);
 

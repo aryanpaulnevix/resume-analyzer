@@ -32,7 +32,7 @@ form.addEventListener("submit", async function (event) {
 
   const formData = new FormData();
   formData.append("resume", file);
-  const response = await fetch("http://localhost:3000/analyze", {
+  const response = await fetch("http://localhost:3000/api/analyze", {
     method: "POST",
     body: formData,
   });
