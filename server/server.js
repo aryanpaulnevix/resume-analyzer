@@ -18,37 +18,55 @@ const app = express();
 
 app.use(cors());
 
-app.post("/analyze", upload.single("resume"), async function (req, res) {
+app.post("/api/analyze", upload.single("resume"), async function (req, res) {
+  if (!req.file) {
+    return res.status(400).json({
+      error: "Please upload a PDF resume",
+    });
+  }
 
-  const pdfBuffer = req.file.buffer;
-  const parser = new PDFParse({ data: pdfBuffer });
-  const result = await parser.getText();
-  const resumeText = result.text;
-  const prompt = createResumePrompt(resumeText);
-  await parser.destroy();
+  try {
+    const pdfBuffer = req.file.buffer;
 
+    const parser = new PDFParse({
+      data: pdfBuffer,
+    });
 
-  const completion = await groq.chat.completions.create({
-    model: "openai/gpt-oss-120b",
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    temperature: 0,
-    seed: 42,
-    max_completion_tokens: 2048,
-    stream: false,
-  });
+    const result = await parser.getText();
+    const resumeText = result.text;
 
-  const analysisText = completion.choices[0].message.content;
+    await parser.destroy();
 
-  const analysisData = JSON.parse(analysisText);
+    const prompt = createResumePrompt(resumeText);
 
-  res.json({
-    analysis: analysisData,
-  });
+    const completion = await groq.chat.completions.create({
+      model: "openai/gpt-oss-120b",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0,
+      max_completion_tokens: 2048,
+      stream: false,
+    });
+
+    const analysisText = completion.choices[0].message.content;
+
+    const analysisData = JSON.parse(analysisText);
+
+    res.json({
+      analysis: analysisData,
+    });
+    
+  } catch (error) {
+    console.error("Resume analysis failed:", error);
+
+    res.status(500).json({
+      error: "Failed to analyze resume",
+    });
+  }
 });
 
 app.listen(3000, function () {
