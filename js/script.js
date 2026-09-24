@@ -14,12 +14,16 @@ form.addEventListener("submit", async function (event) {
   if (!file) {
     fileError.textContent = "Please select a resume";
     fileError.classList.add("show");
+    analyzeBtn.textContent = "Analyze Resume";
+    analyzeBtn.disabled = false;
     return;
   }
 
   if (file.type !== "application/pdf") {
     fileError.textContent = "Please upload a PDF";
     fileError.classList.add("show");
+    analyzeBtn.textContent = "Analyze Resume";
+    analyzeBtn.disabled = false;
     return;
   }
 
@@ -39,8 +43,6 @@ form.addEventListener("submit", async function (event) {
   document.getElementById("skills-list").textContent = "";
   document.getElementById("missing-list").textContent = "";
   document.getElementById("suggestion-list").textContent = "";
-
-  console.log("AI Analysis:", data.analysis);
 
   document.getElementById("score").textContent = data.analysis.score;
 
