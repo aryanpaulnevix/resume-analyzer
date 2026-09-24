@@ -4,7 +4,6 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const { Groq } = require("groq-sdk");
-require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 
 const createResumePrompt = require("./prompts/resumePrompt");
@@ -69,6 +68,6 @@ app.post("/api/analyze", upload.single("resume"), async function (req, res) {
   }
 });
 
-app.listen(3000, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log("Server running on port 3000");
 });
