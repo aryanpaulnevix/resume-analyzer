@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const { Groq } = require("groq-sdk");
+require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 
 const createResumePrompt = require("./prompts/resumePrompt");
