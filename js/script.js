@@ -34,44 +34,59 @@ form.addEventListener("submit", async function (event) {
   formData.append("resume", file);
 
   const API_URL =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? "http://localhost:3000"
-    : "";
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "http://localhost:3000"
+      : "";
 
-  const response = await fetch(`${API_URL}/api/analyze`, {
-    method: "POST",
-    body: formData,
-  });
-  analyzeBtn.textContent = "Analyze Resume";
-  analyzeBtn.disabled = false;
+  try {
+    const response = await fetch(`${API_URL}/api/analyze`, {
+      method: "POST",
+      body: formData,
+    });
 
-  const data = await response.json();
-  document.getElementById("skills-list").textContent = "";
-  document.getElementById("missing-list").textContent = "";
-  document.getElementById("suggestion-list").textContent = "";
+    const data = await response.json();
 
-  document.getElementById("score").textContent = data.analysis.score;
+    if (!response.ok) {
+      throw new Error(data.error || "Something went wrong");
+    }
 
-  const skillsList = document.getElementById("skills-list");
-  data.analysis.skills.forEach(function (skill) {
-    const li = document.createElement("li");
-    li.textContent = skill;
-    skillsList.appendChild(li);
-  });
+    document.getElementById("skills-list").textContent = "";
+    document.getElementById("missing-list").textContent = "";
+    document.getElementById("suggestion-list").textContent = "";
 
-  const missingList = document.getElementById("missing-list");
-  data.analysis.missingKeywords.forEach(function (keyword) {
-    const li = document.createElement("li");
-    li.textContent = keyword;
-    missingList.appendChild(li);
-  });
+    document.getElementById("score").textContent = data.analysis.score;
 
-  const suggestionList = document.getElementById("suggestion-list");
+    const skillsList = document.getElementById("skills-list");
 
-  data.analysis.suggestions.forEach(function (suggestion) {
-    const li = document.createElement("li");
-    li.textContent = suggestion;
-    suggestionList.appendChild(li);
-  });
+    data.analysis.skills.forEach(function (skill) {
+      const li = document.createElement("li");
+      li.textContent = skill;
+      skillsList.appendChild(li);
+    });
+
+    const missingList = document.getElementById("missing-list");
+
+    data.analysis.missingKeywords.forEach(function (keyword) {
+      const li = document.createElement("li");
+      li.textContent = keyword;
+      missingList.appendChild(li);
+    });
+
+    const suggestionList = document.getElementById("suggestion-list");
+
+    data.analysis.suggestions.forEach(function (suggestion) {
+      const li = document.createElement("li");
+      li.textContent = suggestion;
+      suggestionList.appendChild(li);
+    });
+  } catch (error) {
+    console.error("Analysis failed:", error);
+
+    fileError.textContent = error.message;
+    fileError.classList.add("show");
+  } finally {
+    analyzeBtn.textContent = "Analyze Resume";
+    analyzeBtn.disabled = false;
+  }
 });
