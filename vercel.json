@@ -1,7 +1,7 @@
 {
   "functions": {
     "server.js": {
-      "includeFiles": ["node_modules/@napi-rs/canvas/**"]
+      "includeFiles": "node_modules/@napi-rs/canvas/**"
     }
   }
 }
